@@ -1,0 +1,348 @@
+{
+  "id": "ch06",
+  "chapter": 6,
+  "title": "Работа со строками",
+  "subtitle": "свойства и методы string, изменение, сцепление и сравнение, поиск подстрок, форматирование, дата и время",
+  "sections": [
+    { "t": "Общее представление о возможностях работы со строками", "p": 108 },
+    { "t": "Изменение строк", "p": 111 },
+    { "t": "Сцепление и сравнение строк", "p": 114 },
+    { "t": "Копирование и замена", "p": 117 },
+    { "t": "Поиск подстрок", "p": 120 },
+    { "t": "Форматирование строк", "p": 123 },
+    { "t": "Форматирование строк, содержащих дату", "p": 126 },
+    { "t": "Выводы", "p": 129 }
+  ],
+  "keypoints": [
+    "**Статические** методы вызываются через имя библиотеки: `String.IsNullOrEmpty()`, `String.Concat()`, `String.Join()`, `String.Compare()`, `String.Format()`",
+    "**Методы экземпляра** вызываются через точку после имени переменной: `text.Length`, `text.Contains()`, `text.ToUpper()`",
+    "`Length` — это **свойство**, а не метод: пишется без скобок",
+    "Регистр меняют `ToUpper()` и `ToLower()`, пробелы убирают `Trim()`, `TrimStart()`, `TrimEnd()`, а дополняют строку `PadLeft()` и `PadRight()`",
+    "Сцепить строки можно оператором `+`, методом `String.Concat()` или `String.Join()` — последний вставляет разделитель между элементами",
+    "Сравнивать можно `String.Compare()` (алфавитный порядок, возвращает число), `CompareTo()`, `Equals()` и оператором `==`",
+    "Искать подстроку: `IndexOf()` — первое вхождение, `LastIndexOf()` — последнее. Если не найдено, возвращается **-1**",
+    "Вырезать часть строки — `Substring()`, удалять — `Remove()`, вставлять — `Insert()`, заменять — `Replace()`",
+    "`String.Format()` подставляет значения по номерам `{0}`, `{1}` и форматирует их: `C` — валюта, `N` — число, `P` — проценты, `F` — фиксированная точка",
+    "`Split()` разбивает строку на массив по символу-разделителю",
+    "`DateTime.Now` даёт текущие дату и время; у объекта есть `DayOfWeek`, `ToShortDateString()`, `AddYears()` и форматы `{0:D}`, `{0:T}`, `{0:dddd}`",
+    "**Строки неизменяемы**: методы не меняют исходную строку, а возвращают новую — результат нужно куда-то присвоить"
+  ],
+  "cheatsheet": [
+    {
+      "t": "Проверка и свойства",
+      "c": "string text = Console.ReadLine();\n\nif (String.IsNullOrWhiteSpace(text))\n{\n    Console.WriteLine(\"ERROR: No Text Found!\");\n}\nelse\n{\n    Console.WriteLine(\"Text Length: \" + text.Length);\n    Console.WriteLine(text.StartsWith(\"C#\"));\n    Console.WriteLine(text.EndsWith(\"steps\"));\n    Console.WriteLine(text.Contains(\"easy\"));\n}",
+      "d": "Length — свойство, без скобок. StartsWith / EndsWith / Contains возвращают bool."
+    },
+    {
+      "t": "Изменение строк",
+      "c": "text = text.Trim();               // убрать пробелы по краям\nstring upper = text.ToUpper();\nstring lower = text.ToLower();\n\nupper = upper.PadLeft(40);        // дополнить пробелами слева\nlower = lower.PadRight(40, '#');  // дополнить символом справа\ntext = text.PadLeft(30, '*').PadRight(40, '*');\n\nConsole.WriteLine(text.TrimEnd('*'));",
+      "d": "Методы возвращают новую строку — результат обязательно присваивают."
+    },
+    {
+      "t": "Сцепление и сравнение",
+      "c": "string[] a = new string[3] { \"Alpha\", \"Bravo\", \"Charlie\" };\n\nstring s = String.Concat(a[0], a[1]);   // AlphaBravo\ns = String.Join(\" \", a[0], a[1]);       // Alpha Bravo\ns = String.Join(\"<br>\", a);             // Alpha<br>Bravo<br>Charlie\n\nint num = String.Compare(a[0], a[1]);   // -1: Alpha раньше Bravo\nnum = a[1].CompareTo(a[1]);             // 0: одинаковые\nbool flag = (a[0] == a[1]);             // False\nflag = a[2].Equals(a[2]);               // True",
+      "d": "Compare возвращает -1, 0 или 1 — «раньше», «одинаково», «позже» по алфавиту."
+    },
+    {
+      "t": "Копирование и замена",
+      "c": "string car = \"GranTurismo\";\n\ncar = car.Remove(4);                 // Gran\ncar = car.Insert(0, \"Maserati \");    // Maserati Gran\ncar = car.Replace(\"Gran\", \"Quattroporte\");\n\nConsole.WriteLine(car.Substring(0, 8));   // Maserati",
+      "d": "Remove(4) оставляет первые 4 символа. Substring(начало, длина) вырезает кусок."
+    },
+    {
+      "t": "Поиск подстрок",
+      "c": "string text = \"My dog is a cute dog\";\n\nint pos = text.IndexOf(\"dog\");       // 3 — первое вхождение\npos = text.LastIndexOf(\"dog\");       // 17 — последнее\npos = text.IndexOf(\"cat\");           // -1 — не найдено\n\nif (pos != -1) { Console.WriteLine(\"Found At \" + pos); }",
+      "d": "Всегда проверяй результат на -1: это признак «не найдено»."
+    },
+    {
+      "t": "Форматирование",
+      "c": "double sum = 2500;\nConsole.WriteLine(sum.ToString(\"C\"));                     // валюта\nConsole.WriteLine(String.Format(\"Number:\\t {0:N}\", sum));  // 2,500.00\nConsole.WriteLine(String.Format(\"Fixed:\\t {0:F}\", sum));\nConsole.WriteLine(String.Format(\"Zero:\\t {0:00.0000}\", 2.5));\n\nstring data = \"Mike,McGrath,Author\";\nstring[] items = data.Split(',');",
+      "d": "{0} — номер аргумента, после двоеточия — код формата."
+    },
+    {
+      "t": "Дата и время",
+      "c": "DateTime now = DateTime.Now;\nConsole.WriteLine(now.DayOfWeek);\nConsole.WriteLine(now.ToShortDateString());\nConsole.WriteLine(now.ToShortTimeString());\nnow = now.AddYears(4);\n\nDateTime dt = new DateTime(2025, 7, 4, 8, 15, 30);\nConsole.WriteLine(\"{0:dddd}\", dt);   // название дня\nConsole.WriteLine(\"{0:D}\", dt);      // длинная дата\nConsole.WriteLine(\"{0:T}\", dt);      // длинное время",
+      "d": "AddYears возвращает новую дату — исходную не меняет."
+    }
+  ],
+  "quiz": [
+    {
+      "id": "q1", "type": "single",
+      "q": "Почему `Length` пишется без скобок?",
+      "options": [
+        "Это опечатка, скобки нужны",
+        "Это свойство, а не метод",
+        "Скобки нужны только для статических методов",
+        "Так короче писать"
+      ],
+      "answer": 1,
+      "explain": "`text.Length` — свойство. А вот `text.ToUpper()` — метод, и скобки обязательны."
+    },
+    {
+      "id": "q2", "type": "single",
+      "q": "Что выведет код?",
+      "code": "string text = \"Hello\";\ntext.ToUpper();\nConsole.WriteLine(text);",
+      "options": ["HELLO", "Hello", "hello", "Ошибка"],
+      "answer": 1,
+      "explain": "Строки неизменяемы: `ToUpper()` возвращает **новую** строку, а исходная остаётся прежней. Нужно `text = text.ToUpper();`"
+    },
+    {
+      "id": "q3", "type": "single",
+      "q": "Что возвращает `IndexOf()`, если подстрока не найдена?",
+      "options": ["0", "-1", "null", "Длину строки"],
+      "answer": 1,
+      "explain": "Именно поэтому результат всегда проверяют: `if (pos != -1)`. Ноль означал бы «найдено в самом начале»."
+    },
+    {
+      "id": "q4", "type": "single",
+      "q": "Чем `String.Concat()` отличается от `String.Join()`?",
+      "options": [
+        "Ничем",
+        "`Join()` вставляет между элементами указанный разделитель, `Concat()` склеивает вплотную",
+        "`Concat()` работает только с двумя строками",
+        "`Join()` работает только с числами"
+      ],
+      "answer": 1,
+      "explain": "`String.Join(\"<br>\", a)` даст `Alpha<br>Bravo<br>Charlie`, а `Concat` — `AlphaBravoCharlie`."
+    },
+    {
+      "id": "q5", "type": "single",
+      "q": "Как вызываются статические методы библиотеки String?",
+      "options": [
+        "Через точку после имени переменной: `text.Format()`",
+        "Через точку после названия библиотеки: `String.Format()`",
+        "Через new",
+        "Через квадратные скобки"
+      ],
+      "answer": 1,
+      "explain": "`String.IsNullOrEmpty()`, `String.Concat()`, `String.Compare()` — статические. А `Contains()` и `Length` работают на экземпляре."
+    },
+    {
+      "id": "q6", "type": "single",
+      "q": "Что выведет код?",
+      "code": "string text = \"My dog is a cute dog\";\nConsole.WriteLine(text.LastIndexOf(\"dog\"));",
+      "options": ["3", "17", "2", "-1"],
+      "answer": 1,
+      "explain": "`LastIndexOf` ищет последнее вхождение. Первое находится в позиции 3, последнее — в 17."
+    },
+    {
+      "id": "q7", "type": "single",
+      "q": "Что сделает `text.PadRight(40, '#')`?",
+      "options": [
+        "Обрежет строку до 40 символов",
+        "Дополнит строку символами # справа до общей длины 40",
+        "Заменит все пробелы на #",
+        "Добавит ровно 40 решёток"
+      ],
+      "answer": 1,
+      "explain": "Pad-методы дополняют строку **до указанной общей длины**. Если строка уже длиннее, ничего не изменится."
+    },
+    {
+      "id": "q8", "type": "single",
+      "q": "Что означает `{0:C}` в `String.Format()`?",
+      "options": [
+        "Вывести букву C",
+        "Подставить нулевой аргумент в денежном формате",
+        "Обрезать до нуля знаков",
+        "Вывести символ с кодом 0"
+      ],
+      "answer": 1,
+      "explain": "До двоеточия — номер аргумента, после — код формата: `C` валюта, `N` число, `P` проценты, `F` фиксированная точка."
+    },
+    {
+      "id": "q9", "type": "single",
+      "q": "Что вернёт `String.Compare(\"Alpha\", \"Bravo\")`?",
+      "options": [
+        "true",
+        "Отрицательное число, потому что Alpha стоит в алфавите раньше",
+        "0",
+        "Длину разницы между строками"
+      ],
+      "answer": 1,
+      "explain": "Compare возвращает число: отрицательное — первая строка раньше, 0 — равны, положительное — позже."
+    },
+    {
+      "id": "q10", "type": "single",
+      "q": "Что делает `Split(',')`?",
+      "options": [
+        "Удаляет все запятые",
+        "Разбивает строку на массив по запятой",
+        "Заменяет запятые на пробелы",
+        "Считает количество запятых"
+      ],
+      "answer": 1,
+      "explain": "Из `\"Mike,McGrath,Author\"` получится массив из трёх строк. Этим удобно разбирать CSV."
+    },
+    {
+      "id": "q11", "type": "multi",
+      "q": "Какие способы сравнить две строки на равенство есть в C#? (выбери все)",
+      "options": ["`a == b`", "`a.Equals(b)`", "`a.CompareTo(b) == 0`", "`a === b`"],
+      "answer": [0, 1, 2],
+      "explain": "Оператора `===` в C# нет — это синтаксис JavaScript."
+    },
+    {
+      "id": "q12", "type": "input",
+      "q": "Какое свойство даёт текущие дату и время? Напиши выражение целиком.",
+      "answer": ["DateTime.Now", "DateTime.Now;", "System.DateTime.Now"],
+      "strip_spaces": true,
+      "explain": "`DateTime now = DateTime.Now;` — дальше у объекта доступны DayOfWeek, ToShortDateString() и другие члены."
+    }
+  ],
+  "exam": [
+    {
+      "id": "e1", "type": "single",
+      "q": "Что выведет код?",
+      "code": "string s = \"GranTurismo\";\ns = s.Remove(4);\nConsole.WriteLine(s);",
+      "options": ["Turismo", "Gran", "GranTuri", "o"],
+      "answer": 1,
+      "explain": "`Remove(4)` удаляет всё начиная с позиции 4, оставляя первые четыре символа — `Gran`."
+    },
+    {
+      "id": "e2", "type": "single",
+      "q": "Что выведет код?",
+      "code": "string text = \"  C# in easy steps  \";\nConsole.WriteLine(text.Trim().Length);",
+      "options": ["20", "16", "18", "Ошибка"],
+      "answer": 1,
+      "explain": "`Trim()` убирает пробелы с обоих концов, остаётся `C# in easy steps` — 16 символов. Методы можно вызывать цепочкой."
+    },
+    {
+      "id": "e3", "type": "single",
+      "q": "Что напечатает код?",
+      "code": "string text = \"My dog is a cute dog\";\nint pos = text.IndexOf(\"cat\");\nConsole.WriteLine(text.Substring(pos, 3));",
+      "options": [
+        "cat",
+        "Ничего — выведется пустая строка",
+        "Программа упадёт: Substring получит позицию -1",
+        "My "
+      ],
+      "answer": 2,
+      "explain": "`IndexOf` вернул -1, и `Substring(-1, 3)` бросит исключение. Поэтому результат поиска всегда проверяют перед использованием."
+    },
+    {
+      "id": "e4", "type": "single",
+      "q": "Чем `String.IsNullOrWhiteSpace()` отличается от `String.IsNullOrEmpty()`?",
+      "options": [
+        "Ничем",
+        "Первый считает «пустой» и строку из одних пробелов, второй — только `null` и строку нулевой длины",
+        "Первый работает только с null",
+        "Второй быстрее"
+      ],
+      "answer": 1,
+      "explain": "Для строки `\"   \"` IsNullOrEmpty вернёт false, а IsNullOrWhiteSpace — true. Для проверки пользовательского ввода обычно нужен второй."
+    },
+    {
+      "id": "e5", "type": "single",
+      "q": "Что выведет код?",
+      "code": "string[] a = new string[3] { \"Alpha\", \"Bravo\", \"Charlie\" };\nConsole.WriteLine(String.Join(\" | \", a));",
+      "options": [
+        "AlphaBravoCharlie",
+        "Alpha | Bravo | Charlie",
+        "Alpha | Bravo | Charlie |",
+        "| Alpha | Bravo | Charlie |"
+      ],
+      "answer": 1,
+      "explain": "Разделитель ставится **между** элементами: ни в начале, ни в конце его нет."
+    },
+    {
+      "id": "e6", "type": "single",
+      "q": "Что выведет код?",
+      "code": "DateTime dt = new DateTime(2025, 7, 4, 8, 15, 30);\nDateTime later = dt.AddYears(4);\nConsole.WriteLine(dt.Year);",
+      "options": ["2029", "2025", "4", "Ошибка"],
+      "answer": 1,
+      "explain": "`AddYears()` возвращает новую дату, а исходную не меняет — ровно как строковые методы."
+    },
+    {
+      "id": "e7", "type": "multi",
+      "q": "Какие методы **возвращают новую строку**, не меняя исходную? (выбери все)",
+      "options": ["`ToUpper()`", "`Trim()`", "`Replace()`", "`Length`"],
+      "answer": [0, 1, 2],
+      "explain": "`Length` вообще не метод, а свойство — оно возвращает число. Все строковые методы возвращают новую строку, потому что строки неизменяемы."
+    },
+    {
+      "id": "e8", "type": "input",
+      "q": "Напиши вызов, который вырежет из строки `text` 5 символов начиная с позиции 3.",
+      "answer": ["text.Substring(3, 5)", "text.Substring(3,5);", "text.Substring(3, 5);"],
+      "strip_spaces": true,
+      "explain": "`Substring(начальная позиция, длина)`. С одним аргументом — `Substring(3)` — вернётся всё от позиции 3 до конца."
+    }
+  ],
+  "tasks": [
+    {
+      "id": "ch06.t1",
+      "title": "Анализ введённого текста",
+      "short": "IsNullOrWhiteSpace, Length, StartsWith, Contains",
+      "level": "easy",
+      "stdin": "C# programming in easy steps",
+      "brief": "Повтори пример «Features» из книги.\n\nСчитай строку у пользователя. Если она пустая или состоит из пробелов — выведи `ERROR: No Text Found!`. Иначе выведи:\n\n```\nThanks. You Entered:\n'C# programming in easy steps'\n\nText Length: 28\nText Does Start With 'C#'\nText Does End With 'steps'\nText Does Contain 'easy'\n```\n\nСлова `Does` / `Does Not` подставляй **тернарным оператором**, как в книге.",
+      "starter": "Console.Title = \"Features\";\n\nConsole.Write(\"Please Enter Text: \");\nstring text = Console.ReadLine();\n\nif (String.IsNullOrWhiteSpace(text))\n{\n    \n}\nelse\n{\n    \n}\n",
+      "hints": [
+        "`string query = text.StartsWith(\"C#\") ? \"Does\" : \"Does Not\";` — затем подставь `query` в вывод.",
+        "`IsNullOrWhiteSpace` — статический метод, вызывается через `String.`, а `StartsWith` — через переменную."
+      ]
+    },
+    {
+      "id": "ch06.t2",
+      "title": "Оформление строки",
+      "short": "Trim, ToUpper, ToLower, PadLeft, PadRight",
+      "level": "easy",
+      "stdin": "   C# in easy steps   ",
+      "brief": "Повтори пример «Manipulate».\n\nСчитай строку (в тестовом вводе она с пробелами по краям) и выведи:\n\n1. исходную строку в кавычках и её длину;\n2. её же после `Trim()` и новую длину;\n3. версию в ВЕРХНЕМ регистре;\n4. версию в нижнем регистре;\n5. строку, дополненную до 40 символов звёздочками с **обеих** сторон;\n6. её же после `TrimEnd('*')`.\n\nКаждую строку бери в кавычки `'...'`, чтобы видеть границы и пробелы.",
+      "starter": "Console.Title = \"Manipulate\";\n\nConsole.Write(\"Please Enter Text: \");\nstring text = Console.ReadLine();\n\nConsole.WriteLine(\"Исходная:\\t'\" + text + \"'\\tДлина: \" + text.Length);\n\n",
+      "hints": [
+        "Дополнение с обеих сторон делается цепочкой: `text.PadLeft(30, '*').PadRight(40, '*')`.",
+        "`TrimEnd('*')` убирает именно звёздочки, а не пробелы — символ передаётся в одинарных кавычках.",
+        "Не забудь присваивать результат: `text = text.Trim();`"
+      ]
+    },
+    {
+      "id": "ch06.t3",
+      "title": "Сравнение и сцепление",
+      "short": "Concat, Join, Compare, CompareTo, Equals",
+      "level": "med",
+      "brief": "Повтори пример «Joined» и разберись, что возвращает каждый способ сравнения.\n\nДан массив `{ \"Alpha\", \"Bravo\", \"Charlie\" }`. Выведи:\n\n1. `String.Concat` первых двух элементов;\n2. `String.Join` первых двух через пробел;\n3. все три элемента через разделитель `<br>`;\n4. `String.Compare(\"Alpha\", \"Bravo\")` и поясни знак результата;\n5. `String.Compare(\"Charlie\", \"Bravo\")`;\n6. `\"Bravo\".CompareTo(\"Bravo\")`;\n7. результат `==` для разных строк и `Equals()` для одинаковых.\n\nКаждую строку подпиши, что она показывает.",
+      "starter": "Console.Title = \"Joined\";\n\nstring[] a = new string[3] { \"Alpha\", \"Bravo\", \"Charlie\" };\n\n",
+      "hints": [
+        "Compare возвращает отрицательное число, ноль или положительное — сравнение по алфавиту.",
+        "`String.Join` принимает либо отдельные строки, либо целый массив — попробуй оба варианта."
+      ]
+    },
+    {
+      "id": "ch06.t4",
+      "title": "Поиск подстроки",
+      "short": "IndexOf, LastIndexOf, проверка на -1",
+      "level": "med",
+      "stdin": "dog",
+      "brief": "Повтори пример «Substring» из книги.\n\nВ строке `\"My dog is a cute dog\"` найди подстроку, которую введёт пользователь. Напиши **функцию** `report(int pos, string sub)`, которая печатает:\n\n- `'dog' Found At 3` — если найдено;\n- `'cat' Not Found!` — если `pos` равен -1.\n\nВызови её для `IndexOf` и для `LastIndexOf`.\n\nОжидаемый вывод:\n\n```\nMy dog is a cute dog\tLength: 20\n\n'dog' Found At 3\n'dog' Found At 17\n```\n\n**Проверь свою программу и на подстроке, которой в тексте нет** — она не должна падать.",
+      "starter": "Console.Title = \"Substring\";\n\nstatic void report(int pos, string sub)\n{\n    \n}\n\nstring text = \"My dog is a cute dog\";\nConsole.WriteLine(text + \"\\tLength: \" + text.Length);\n\nConsole.Write(\"\\nPlease Enter A Substring To Seek: \");\nstring sub = Console.ReadLine();\n\n",
+      "hints": [
+        "Вся защита от падения — в проверке `if (pos != -1)` внутри функции `report`.",
+        "Это та самая функция из главы 5: объявляется прямо в файле со словом `static`."
+      ]
+    },
+    {
+      "id": "ch06.t5",
+      "title": "Форматирование чисел и разбор строки",
+      "short": "String.Format, коды форматов, Split",
+      "level": "med",
+      "brief": "Повтори пример «Format».\n\n1. Для числа `2500` выведи представления: общее `{0:G}`, фиксированное `{0:F}`, числовое `{0:N}`, денежное `{0:C}`.\n2. Раздели число на 1000 и выведи его как проценты `{0:P}` и с ведущими нулями `{0:00.0000}`.\n3. Разбери строку `\"Mike,McGrath,Author\"` методом `Split(',')` и выведи каждый элемент с маркером `* ` — в цикле.\n\nДобавь от себя: выведи количество полученных частей.",
+      "starter": "Console.Title = \"Format\";\n\ndouble sum = 2500;\nConsole.WriteLine(\"Currency String: \" + sum.ToString(\"C\"));\n\n",
+      "hints": [
+        "`Console.Write(String.Format(\"\\nNumber:\\t\\t {0:N}\", sum));`",
+        "`Split(',')` возвращает массив — его длину даёт `.Length`.",
+        "Обрати внимание: денежный формат подставит рубли, потому что берёт настройки твоей системы."
+      ]
+    },
+    {
+      "id": "ch06.t6",
+      "title": "Дата и время",
+      "short": "DateTime, DayOfWeek, форматы даты",
+      "level": "hard",
+      "brief": "Повтори пример «DateFormat» и дополни его.\n\n1. Получи текущие дату и время через `DateTime.Now` и выведи их целиком.\n2. Выведи отдельно: название дня недели, только дату, только время.\n3. Прибавь 4 года и выведи будущую дату.\n4. Создай конкретную дату `new DateTime(2025, 7, 4, 8, 15, 30)` и выведи её в форматах `{0:f}`, `{0:dddd}`, `{0:D}`, `{0:T}`.\n5. **От себя:** посчитай и выведи, сколько дней прошло с 1 января текущего года до сегодня.\n\nДля пункта 5 пригодится вычитание дат: разность двух `DateTime` даёт `TimeSpan` со свойством `.Days`.",
+      "starter": "Console.Title = \"DateFormat\";\n\nDateTime now = DateTime.Now;\nConsole.Write(\"Current Date And Time: \" + now);\n\n",
+      "hints": [
+        "`now.AddYears(4)` возвращает новую дату — присвой результат, иначе изменения не будет.",
+        "Начало года: `new DateTime(now.Year, 1, 1)`.",
+        "Разность: `TimeSpan diff = now - start;` затем `diff.Days`."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,357 @@
+{
+  "id": "ch09",
+  "chapter": 9,
+  "title": "Создание объектов",
+  "subtitle": "инкапсуляция, конструкторы, наследование, base, сокрытие методов, virtual и override, abstract, sealed, partial",
+  "sections": [
+    { "t": "Инкапсуляция данных", "p": 172 },
+    { "t": "Создание нескольких объектов", "p": 175 },
+    { "t": "Инициализация объектов класса", "p": 178 },
+    { "t": "Наследование свойств класса", "p": 181 },
+    { "t": "Вызов конструкторов базового класса", "p": 184 },
+    { "t": "Сокрытие методов базового класса", "p": 187 },
+    { "t": "Управление вызовом методов", "p": 190 },
+    { "t": "Создание классов возможностей", "p": 193 },
+    { "t": "Использование неполных классов", "p": 196 },
+    { "t": "Выводы", "p": 199 }
+  ],
+  "keypoints": [
+    "**Инкапсуляция, наследование и полиморфизм** — три краеугольных камня объектно-ориентированного программирования",
+    "**Класс** — структура, способная содержать переменные и методы; вместе они называются **членами класса**",
+    "Доступ к членам управляют **спецификаторы доступа**: `private` — только внутри класса, `public` — отовсюду, `protected` — ещё и в дочерних классах",
+    "Экземпляр класса создаётся ключевым словом `new`: `Dog fido = new Dog();`",
+    "Надёжная инкапсуляция: переменные делают `private`, а доступ к ним дают публичные **устанавливающие и получающие** методы",
+    "Если параметр метода назван так же, как переменная класса, различить их помогает префикс **`this`**",
+    "**Конструктор** называется так же, как класс, и вызывается автоматически при создании экземпляра",
+    "Дочерний класс наследует члены базового; в объявлении ставится **двоеточие**: `class Rectangle : Polygon`",
+    "Перегруженный конструктор базового класса вызывают через **`base`**: `public Son(int num) : base(num)`",
+    "Метод в дочернем классе с ключевым словом **`new`** скрывает одноимённый метод базового класса",
+    "Ключевые слова **`virtual`** и **`override`** указывают, что метод базового класса замещается методом дочернего",
+    "**`abstract`** — класс возможностей: реализацию методов обязаны предоставить дочерние классы. **`sealed`** запрещает использовать класс как базовый",
+    "**`partial`** позволяет разнести определение одного класса по нескольким частям"
+  ],
+  "cheatsheet": [
+    {
+      "t": "Инкапсуляция: private поля и public методы",
+      "c": "public class Dog\n{\n    private string name, color;\n    private int age;\n\n    public void setValues(string name, int age, string color)\n    {\n        this.name = name;   // this отличает поле от параметра\n        this.age = age;\n        this.color = color;\n    }\n\n    public string getName() { return name; }\n    public int getAge() { return age; }\n}\n\nDog fido = new Dog();\nfido.setValues(\"Fido\", 3, \"Brown\");\nConsole.WriteLine(fido.getName());",
+      "d": "Классы объявляются после операторов верхнего уровня, в том же файле."
+    },
+    {
+      "t": "Конструктор",
+      "c": "public class Cat\n{\n    private string name;\n    private int age;\n\n    public Cat()                    // конструктор без аргументов\n    {\n        name = \"Tigger\";\n        age = 3;\n    }\n\n    public void setName(string name) { this.name = name; }\n    public string getName() { return name; }\n}\n\nCat tigger = new Cat();   // конструктор вызван автоматически",
+      "d": "Имя конструктора совпадает с именем класса, тип возврата не указывается вообще."
+    },
+    {
+      "t": "Наследование",
+      "c": "public class Polygon\n{\n    protected int width, height;   // protected — видно дочерним\n\n    public void setValues(int width, int height)\n    {\n        this.width = width;\n        this.height = height;\n    }\n}\n\npublic class Rectangle : Polygon\n{\n    public int area() { return (width * height); }\n}\n\npublic class Triangle : Polygon\n{\n    public int area() { return ((width * height) / 2); }\n}",
+      "d": "Оба дочерних класса получили setValues и поля, не объявляя их заново."
+    },
+    {
+      "t": "Вызов конструктора базового класса",
+      "c": "public class Parent\n{\n    public Parent() { Console.WriteLine(\"Parent Called\"); }\n    public Parent(int num) { Console.WriteLine(\"Parent+ : \" + num); }\n}\n\npublic class Son : Parent\n{\n    public Son() { Console.WriteLine(\"\\tSon Called\"); }\n\n    public Son(int num) : base(num)   // явный вызов нужного конструктора\n    { Console.WriteLine(\"\\tSon+ : \" + num); }\n}",
+      "d": "Конструктор базового класса всегда выполняется первым, до тела дочернего."
+    },
+    {
+      "t": "Сокрытие методов: new и base",
+      "c": "public class Man\n{\n    public void speak() { Console.Write(\"Hello: \"); }\n    public void speak(string message) { Console.WriteLine(message + \"!\"); }\n}\n\npublic class Hombre : Man\n{\n    public new void speak(string message)   // скрывает метод базового\n    {\n        base.speak();                       // явный вызов базового\n        Console.WriteLine(message);\n    }\n}\n\n((Man)enrique).speak(\"Es una tarde hermosa\");  // вызвать скрытый метод",
+      "d": "Приведение к типу базового класса добирается до скрытого метода."
+    },
+    {
+      "t": "virtual и override — настоящий полиморфизм",
+      "c": "public class Bird\n{\n    public virtual void talk()\n    { Console.WriteLine(\"A Bird Talks...\"); }\n}\n\npublic class Pigeon : Bird\n{\n    public override void talk()\n    { Console.WriteLine(\"Pigeon Says: Coo! Coo!\"); }\n}\n\nstatic void describe(Bird obj) { obj.talk(); }\ndescribe(new Pigeon());   // вызовет версию голубя",
+      "d": "В отличие от new, override работает даже когда объект хранится в переменной базового типа."
+    },
+    {
+      "t": "abstract, sealed, partial",
+      "c": "public abstract class Bird\n{\n    public abstract void talk();   // без тела: реализуют потомки\n}\n\npublic sealed class Pigeon : Bird   // от него наследовать нельзя\n{\n    public override void talk()\n    { Console.WriteLine(\"Coo! Coo!\"); }\n}\n\npublic partial class Sailboat { private string make; }\npublic partial class Sailboat { public void describe() { } }",
+      "d": "Экземпляр абстрактного класса создать нельзя — он описывает только возможности."
+    }
+  ],
+  "quiz": [
+    {
+      "id": "q1", "type": "single",
+      "q": "Как называются три краеугольных камня ООП?",
+      "options": [
+        "Классы, объекты, методы",
+        "Инкапсуляция, наследование, полиморфизм",
+        "Переменные, циклы, условия",
+        "public, private, protected"
+      ],
+      "answer": 1,
+      "explain": "Инкапсуляция прячет данные, наследование переиспользует код, полиморфизм даёт разное поведение одного вызова."
+    },
+    {
+      "id": "q2", "type": "single",
+      "q": "Как создать экземпляр класса `Dog`?",
+      "options": ["`Dog fido = Dog();`", "`Dog fido = new Dog();`", "`new Dog fido;`", "`Dog fido;`"],
+      "answer": 1,
+      "explain": "Ключевое слово `new`, за ним имя класса и круглые скобки."
+    },
+    {
+      "id": "q3", "type": "single",
+      "q": "Зачем переменные класса объявляют как `private`, а доступ дают через публичные методы?",
+      "options": [
+        "Так короче код",
+        "Ради надёжной инкапсуляции: данные нельзя испортить напрямую извне",
+        "Так требует компилятор",
+        "Чтобы работало наследование"
+      ],
+      "answer": 1,
+      "explain": "Публичные устанавливающие и получающие методы контролируют доступ к скрытым переменным."
+    },
+    {
+      "id": "q4", "type": "single",
+      "q": "Для чего нужен префикс `this`?",
+      "options": [
+        "Чтобы создать объект",
+        "Чтобы отличить переменную класса от параметра метода с таким же именем",
+        "Чтобы вызвать базовый класс",
+        "Чтобы объявить конструктор"
+      ],
+      "answer": 1,
+      "explain": "В `this.name = name;` слева — поле класса, справа — параметр метода."
+    },
+    {
+      "id": "q5", "type": "single",
+      "q": "Что верно про конструктор?",
+      "options": [
+        "Называется так же, как класс, и вызывается автоматически при создании экземпляра",
+        "Обязательно возвращает значение",
+        "Вызывается вручную после создания объекта",
+        "Может быть только один на класс"
+      ],
+      "answer": 0,
+      "explain": "Тип возврата у конструктора не указывается вообще. Конструкторов может быть несколько — это перегрузка."
+    },
+    {
+      "id": "q6", "type": "single",
+      "q": "Как объявить, что класс `Rectangle` наследует класс `Polygon`?",
+      "options": [
+        "`class Rectangle extends Polygon`",
+        "`class Rectangle : Polygon`",
+        "`class Rectangle inherits Polygon`",
+        "`class Rectangle(Polygon)`"
+      ],
+      "answer": 1,
+      "explain": "В C# ставится двоеточие, за которым следует имя родительского класса. `extends` — это Java."
+    },
+    {
+      "id": "q7", "type": "single",
+      "q": "Что означает спецификатор `protected`?",
+      "options": [
+        "Доступ только внутри своего класса",
+        "Доступ внутри своего класса и в дочерних классах",
+        "Доступ отовсюду",
+        "Запрет на изменение"
+      ],
+      "answer": 1,
+      "explain": "Поэтому в примере книги `protected int width, height;` доступны в Rectangle и Triangle, но не снаружи."
+    },
+    {
+      "id": "q8", "type": "single",
+      "q": "Что делает ключевое слово `base` в `public Son(int num) : base(num)`?",
+      "options": [
+        "Создаёт новый объект",
+        "Вызывает конструктор базового класса, передавая ему аргумент",
+        "Объявляет базовый класс",
+        "Скрывает метод"
+      ],
+      "answer": 1,
+      "explain": "Без `: base(num)` был бы вызван конструктор базового класса **без аргументов**."
+    },
+    {
+      "id": "q9", "type": "single",
+      "q": "Какая пара ключевых слов указывает, что метод базового класса замещается методом дочернего?",
+      "options": ["`static` и `const`", "`virtual` и `override`", "`new` и `base`", "`abstract` и `sealed`"],
+      "answer": 1,
+      "explain": "Метод базового класса помечают `virtual`, а в дочернем пишут `override`."
+    },
+    {
+      "id": "q10", "type": "single",
+      "q": "Что даёт ключевое слово `sealed` в объявлении класса?",
+      "options": [
+        "Запрещает создавать экземпляры",
+        "Гарантирует, что класс нельзя использовать как базовый",
+        "Делает все методы приватными",
+        "Запрещает менять поля"
+      ],
+      "answer": 1,
+      "explain": "Это мера безопасности: от запечатанного класса наследовать нельзя."
+    },
+    {
+      "id": "q11", "type": "single",
+      "q": "Что позволяет ключевое слово `partial`?",
+      "options": [
+        "Реализовать только часть методов",
+        "Разнести определение одного класса по нескольким частям",
+        "Создать неполный объект",
+        "Скрыть часть полей"
+      ],
+      "answer": 1,
+      "explain": "В книге класс Sailboat разделён на Program.cs и Sailboat.cs. В каждую часть нужно включить слово partial."
+    },
+    {
+      "id": "q12", "type": "input",
+      "q": "Какое ключевое слово указывает, что за реализацию метода отвечают дочерние классы?",
+      "answer": ["abstract", "abstract."],
+      "explain": "Абстрактный метод объявляется без тела, а экземпляр абстрактного класса создать нельзя."
+    }
+  ],
+  "exam": [
+    {
+      "id": "e1", "type": "single",
+      "q": "В каком порядке выведутся сообщения?",
+      "code": "Son carl = new Son(100);\n\npublic class Parent\n{\n    public Parent(int num) { Console.WriteLine(\"Parent+ : \" + num); }\n}\n\npublic class Son : Parent\n{\n    public Son(int num) : base(num)\n    { Console.WriteLine(\"Son+ : \" + num); }\n}",
+      "options": [
+        "Son+ : 100, затем Parent+ : 100",
+        "Parent+ : 100, затем Son+ : 100",
+        "Только Son+ : 100",
+        "Только Parent+ : 100"
+      ],
+      "answer": 1,
+      "explain": "Конструктор базового класса выполняется первым, до тела конструктора дочернего."
+    },
+    {
+      "id": "e2", "type": "single",
+      "q": "Что выведет код?",
+      "code": "Rectangle rect = new Rectangle();\nrect.setValues(4, 5);\nConsole.WriteLine(rect.area());\n\npublic class Polygon\n{\n    protected int width, height;\n    public void setValues(int w, int h) { width = w; height = h; }\n}\n\npublic class Rectangle : Polygon\n{\n    public int area() { return (width * height); }\n}",
+      "options": ["9", "20", "10", "Ошибка: setValues нет в Rectangle"],
+      "answer": 1,
+      "explain": "Rectangle унаследовал и метод setValues, и поля width/height — объявлять их заново не нужно. 4 × 5 = 20."
+    },
+    {
+      "id": "e3", "type": "single",
+      "q": "В чём разница между сокрытием (`new`) и замещением (`override`)?",
+      "options": [
+        "Разницы нет",
+        "При `override` через переменную базового типа вызовется метод дочернего класса, а при `new` — метод базового",
+        "`new` работает быстрее",
+        "`override` можно применять только к полям"
+      ],
+      "answer": 1,
+      "explain": "Это и есть полиморфизм: `describe(Bird obj)` с `virtual/override` вызовет нужную версию, а со скрытием — базовую."
+    },
+    {
+      "id": "e4", "type": "single",
+      "q": "Зачем в примере книги написано `((Man)enrique).speak(\"...\")`?",
+      "options": [
+        "Чтобы создать нового человека",
+        "Чтобы привести объект к базовому типу и вызвать скрытый метод базового класса",
+        "Чтобы проверить тип объекта",
+        "Это лишние скобки"
+      ],
+      "answer": 1,
+      "explain": "Метод дочернего класса объявлен с `new` и скрывает базовый. Приведение к типу `Man` добирается до скрытой версии."
+    },
+    {
+      "id": "e5", "type": "single",
+      "q": "Почему этот код вызовет ошибку?",
+      "code": "public abstract class Bird\n{\n    public abstract void talk();\n}\n\nBird b = new Bird();",
+      "options": [
+        "У метода talk нет тела",
+        "Нельзя создать экземпляр абстрактного класса",
+        "Класс объявлен после использования",
+        "Не хватает конструктора"
+      ],
+      "answer": 1,
+      "explain": "Абстрактный класс описывает только возможности. Создавать можно экземпляры его дочерних классов, реализовавших методы."
+    },
+    {
+      "id": "e6", "type": "single",
+      "q": "Что означает, что `name` объявлено как `private`?",
+      "options": [
+        "Поле доступно только внутри своего класса",
+        "Поле нельзя изменить",
+        "Поле видно дочерним классам",
+        "Поле общее для всех объектов"
+      ],
+      "answer": 0,
+      "explain": "Снаружи к нему обращаются только через публичные методы — в этом и состоит инкапсуляция. Дочерним классам его тоже не видно: для этого нужен `protected`."
+    },
+    {
+      "id": "e7", "type": "multi",
+      "q": "Что верно про члены класса? (выбери все)",
+      "options": [
+        "Членами называют и переменные, и методы класса",
+        "Доступ к ним управляется спецификаторами доступа",
+        "Все члены обязаны быть public",
+        "Поля обычно делают private, а методы доступа — public"
+      ],
+      "answer": [0, 1, 3],
+      "explain": "Обязательных требований к public нет — наоборот, поля по умолчанию прячут."
+    },
+    {
+      "id": "e8", "type": "input",
+      "q": "Каким ключевым словом в дочернем классе явно вызывают метод базового класса? Напиши слово.",
+      "answer": ["base", "base.", "base()"],
+      "explain": "Например, `base.speak();` внутри метода дочернего класса вызывает версию родителя."
+    }
+  ],
+  "tasks": [
+    {
+      "id": "ch09.t1",
+      "title": "Класс Dog: инкапсуляция",
+      "short": "private поля, this, методы доступа",
+      "level": "easy",
+      "brief": "Повтори пример «Objects» из книги.\n\nСоздай класс `Dog` с **приватными** полями `name`, `age`, `color` и публичными методами:\n\n- `setValues(string name, int age, string color)` — использует `this` для различения полей и параметров;\n- `getName()`, `getAge()`, `getColor()`;\n- `bark()` — возвращает строку `\" Гав!\"`.\n\nСоздай **два разных** объекта с разными данными и выведи про каждого строку через `String.Format`:\n\n```\nFido is a 3 year old Brown dog Гав!\nLucy is a 2 year old Gray dog Гав!\n```\n\n**Проверь себя:** попробуй обратиться к `fido.name` напрямую — и убедись, что компилятор не даёт. Потом убери эту строку.",
+      "starter": "Console.Title = \"Objects\";\n\nDog fido = new Dog();\nfido.setValues(\"Fido\", 3, \"Brown\");\n\n\npublic class Dog\n{\n    private string name, color;\n    private int age;\n\n    \n}\n",
+      "hints": [
+        "Несколько полей одного типа объявляются через запятую: `private string name, color;`",
+        "`String.Format(\"{0} is a {1} year old {2} dog\", fido.getName(), fido.getAge(), fido.getColor())`",
+        "Два объекта полностью независимы: у каждого свой набор значений полей."
+      ]
+    },
+    {
+      "id": "ch09.t2",
+      "title": "Конструкторы",
+      "short": "конструктор по умолчанию и с аргументами",
+      "level": "med",
+      "brief": "Создай класс `Cat` в духе примера «Constructor»:\n\n1. Конструктор **без аргументов** задаёт значения по умолчанию: имя `Tigger`, возраст 3, цвет `Ginger`.\n2. Второй конструктор **с тремя аргументами** задаёт всё явно (это перегрузка!).\n3. Методы `setName`, `setAge`, `setColor` и соответствующие `get`-методы.\n4. Метод `cry()` возвращает `\" Мяу!\"`.\n\nСоздай трёх котов: первого — конструктором по умолчанию, второго — с аргументами, третьего — по умолчанию, а потом измени ему имя через `setName`. Выведи всех троих.",
+      "starter": "Console.Title = \"Constructor\";\n\nCat tigger = new Cat();\n\n\npublic class Cat\n{\n    private string name, color;\n    private int age;\n\n    public Cat()\n    {\n        \n    }\n\n    \n}\n",
+      "hints": [
+        "У конструктора **не указывается** тип возврата — даже `void` писать нельзя.",
+        "Два конструктора с разными списками параметров — это обычная перегрузка методов из главы 5.",
+        "В конструкторе с аргументами пригодится `this`, если параметры названы так же, как поля."
+      ]
+    },
+    {
+      "id": "ch09.t3",
+      "title": "Фигуры через наследование",
+      "short": "базовый класс, protected, два потомка",
+      "level": "med",
+      "brief": "Повтори пример «Inheritance» и расширь его.\n\n1. Базовый класс `Polygon` с **protected** полями `width`, `height` и публичным методом `setValues`.\n2. Классы `Rectangle` и `Triangle`, наследующие `Polygon`, каждый со своим методом `area()`.\n3. **От себя:** добавь третий класс `Square : Polygon` с методом `area()`, а также метод `describe()` в базовый класс, который печатает размеры.\n\nВывод:\n\n```\nRectangle Area: 20\nTriangle Area: 10\nSquare Area: 16\n```\n\n**Вопрос в комментарии:** почему поля объявлены `protected`, а не `private`? Что сломается, если поменять?",
+      "starter": "Console.Title = \"Inheritance\";\n\nRectangle rect = new Rectangle();\nrect.setValues(4, 5);\nConsole.WriteLine(\"Rectangle Area: \" + rect.area());\n\n\npublic class Polygon\n{\n    protected int width, height;\n\n    public void setValues(int width, int height)\n    {\n        this.width = width;\n        this.height = height;\n    }\n}\n\n",
+      "hints": [
+        "Площадь треугольника: `(width * height) / 2`.",
+        "Для квадрата используй только `width` — или задай обе стороны одинаковыми.",
+        "Попробуй действительно заменить `protected` на `private` и прочитай, что скажет компилятор. Это и будет ответом на вопрос."
+      ]
+    },
+    {
+      "id": "ch09.t4",
+      "title": "Птицы: virtual и override",
+      "short": "полиморфизм в действии",
+      "level": "hard",
+      "brief": "Повтори пример «Override».\n\n1. Базовый класс `Bird` с **virtual**-методами `talk()` и `fly()`.\n2. Классы `Pigeon` и `Chicken`, замещающие оба метода через `override`. В методе `fly()` голубя после своего сообщения вызови базовую версию через `base.fly()`.\n3. Функция `describe(Bird obj)`, которая принимает **базовый** тип и вызывает `obj.talk()` и `obj.fly()`.\n4. Вызови `describe()` для голубя и для курицы.\n\n**Главная часть задания — в комментарии:** объясни, почему `describe()` принимает `Bird`, но вызываются методы голубя и курицы. Затем **проверь** это: замени в базовом классе `virtual` на обычный метод, а в дочерних `override` на `new`, запусти снова и опиши, что изменилось в выводе и почему.",
+      "starter": "Console.Title = \"Override\";\n\nstatic void describe(Bird obj)\n{\n    obj.talk();\n    obj.fly();\n}\n\nPigeon joey = new Pigeon();\nChicken lola = new Chicken();\n\ndescribe(joey);\ndescribe(lola);\n\n\npublic class Bird\n{\n    public virtual void talk()\n    { Console.WriteLine(\"A Bird Talks...\"); }\n\n    \n}\n",
+      "hints": [
+        "Сигнатуры `virtual` и `override` методов должны совпадать полностью: тип возврата, имя, параметры.",
+        "`base.fly()` вызывает версию родителя — получится два сообщения подряд.",
+        "После замены на `new` выведутся сообщения **базового** класса: переменная объявлена как `Bird`, и без `virtual` выбор метода делается по типу переменной, а не объекта."
+      ]
+    },
+    {
+      "id": "ch09.t5",
+      "title": "Абстрактные и неполные классы",
+      "short": "abstract, sealed, partial",
+      "level": "hard",
+      "brief": "Собери финальный пример главы.\n\n1. **Абстрактный** класс `Bird` с абстрактными методами `talk()` и `fly()` (без тел).\n2. **Запечатанный** класс `Pigeon : Bird`, реализующий оба метода через `override`.\n3. Обычный класс `Chicken : Bird` — тоже с реализацией.\n4. Класс `Caller` с методом `describe(Bird obj)`, вызывающим оба метода.\n5. Класс `Sailboat`, разбитый на **две части** через `partial`: в первой — приватные поля `make`, `model` и конструктор, во второй — метод `describe()`, печатающий `Sailboat: Laser Classic`.\n\nВ книге части `partial`-класса лежат в разных файлах. В тренажёре один файл, поэтому просто объяви обе части подряд — это тоже разрешено.\n\n**Проверь себя:** попробуй создать `new Bird()` и унаследовать что-нибудь от `Pigeon`. Прочитай ошибки компилятора и объясни их в комментарии.",
+      "starter": "Console.Title = \"Capability\";\n\nPigeon joey = new Pigeon();\nChicken lola = new Chicken();\nCaller call = new Caller();\n\ncall.describe(joey);\ncall.describe(lola);\n\nSailboat boat = new Sailboat(\"Laser\", \"Classic\");\nboat.describe();\n\n\npublic abstract class Bird\n{\n    public abstract void talk();\n    public abstract void fly();\n}\n\n",
+      "hints": [
+        "У абстрактного метода нет тела и нет фигурных скобок — только точка с запятой после скобок.",
+        "Дочерний класс **обязан** реализовать все абстрактные методы, иначе код не скомпилируется.",
+        "Обе части partial-класса должны иметь одинаковое имя и слово `partial` в каждой."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,317 @@
+{
+  "id": "ch07",
+  "chapter": 7,
+  "title": "Доступ к файлам",
+  "subtitle": "запись и добавление, чтение целиком и построчно, StreamReader и StreamWriter, конструкция using",
+  "sections": [
+    { "t": "Запись в файл", "p": 132 },
+    { "t": "Добавление в файл", "p": 135 },
+    { "t": "Чтение текста целиком и строк по отдельности", "p": 138 },
+    { "t": "Потоковый вывод строк", "p": 141 },
+    { "t": "Изменение ввода и вывода", "p": 144 },
+    { "t": "Выводы", "p": 147 }
+  ],
+  "keypoints": [
+    "Класс `System.IO.File` содержит методы для простого чтения и записи текстовых файлов",
+    "`File.WriteAllText(путь, текст)` — записывает строку в файл, **перезаписывая** его целиком",
+    "`File.WriteAllLines(путь, массив)` — записывает элементы массива `string` отдельными строками",
+    "`File.AppendAllText(путь, текст)` — **добавляет** текст к существующему файлу, не стирая его",
+    "`File.Exists(путь)` проверяет, существует ли файл — вызывается до чтения, чтобы не поймать ошибку",
+    "`File.ReadAllText()` читает весь файл в одну переменную `string`, `File.ReadAllLines()` — в массив строк",
+    "Чтение и запись рекомендуется **всегда** заключать в блок `try-catch`: операция может не удаться",
+    "`StreamWriter` и `StreamReader` — классы с методами уровня объекта; экземпляр создаётся через `new` с путём в конструкторе",
+    "У `StreamReader` есть `Read()` и `ReadLine()`, у `StreamWriter` — `Write()` и `WriteLine()`",
+    "`ReadLine()` возвращает `null`, когда доходит до конца файла — на этом строят цикл чтения",
+    "Объекты потоков нужны лишь на время работы, поэтому их заключают в конструкцию **`using`** — она гарантирует удаление из памяти",
+    "Второй аргумент `true` у конструктора `StreamWriter` включает режим дописывания"
+  ],
+  "cheatsheet": [
+    {
+      "t": "Запись файла с защитой",
+      "c": "string path = \"poem.txt\";\n\nif (File.Exists(path))\n{\n    Console.WriteLine(\"File Already Exists: \" + path);\n}\nelse\n{\n    try\n    {\n        File.WriteAllText(path, \"Первая строка\");\n        Console.WriteLine(\"File Written: \" + path);\n    }\n    catch (Exception error)\n    {\n        Console.WriteLine(error.Message);\n    }\n}",
+      "d": "В тренажёре путь указывай относительный — файл появится рядом с кодом, в папке runs."
+    },
+    {
+      "t": "Массив строк и дописывание",
+      "c": "string[] poem = new string[]\n{\n    \"Первая строка\",\n    \"Вторая строка\",\n};\n\nFile.WriteAllLines(path, poem);        // перезаписать\nFile.AppendAllText(path, \"\\nХвост\");   // дописать в конец",
+      "d": "WriteAllText и WriteAllLines стирают прежнее содержимое, AppendAllText — нет."
+    },
+    {
+      "t": "Чтение целиком и построчно",
+      "c": "if (File.Exists(path))\n{\n    try\n    {\n        string text = File.ReadAllText(path);\n        Console.WriteLine(text);\n\n        string[] lines = File.ReadAllLines(path);\n        int num = 1;\n        foreach (string line in lines)\n        {\n            Console.WriteLine(num + \" : \" + line);\n            num++;\n        }\n    }\n    catch (Exception error) { Console.WriteLine(error.Message); }\n}",
+      "d": "ReadAllLines удобен, когда нужна нумерация или обработка каждой строки."
+    },
+    {
+      "t": "StreamWriter в конструкции using",
+      "c": "using (StreamWriter writer = new StreamWriter(path))\n{\n    foreach (string line in poem)\n    { writer.WriteLine(line); }\n}\n\n// второй аргумент true — режим дописывания\nusing (StreamWriter writer = new StreamWriter(path, true))\n{\n    writer.WriteLine(\"Дописанная строка\");\n}",
+      "d": "По выходу из блока using файл закрывается автоматически, даже если случилась ошибка."
+    },
+    {
+      "t": "StreamReader и цикл до конца файла",
+      "c": "using (StreamReader reader = new StreamReader(path))\n{\n    string line;\n    while ((line = reader.ReadLine()) != null)\n    {\n        string[] sub = line.Split(',');\n        Console.WriteLine(String.Format(\"{0,-30} {1,-20}\", sub[0], sub[1]));\n    }\n}",
+      "d": "ReadLine() вернёт null в конце файла — это и есть условие выхода из цикла."
+    }
+  ],
+  "quiz": [
+    {
+      "id": "q1", "type": "single",
+      "q": "Что делает `File.WriteAllText()`, если файл уже существует?",
+      "options": [
+        "Дописывает текст в конец",
+        "Полностью перезаписывает файл новым содержимым",
+        "Выдаёт ошибку",
+        "Создаёт второй файл"
+      ],
+      "answer": 1,
+      "explain": "Чтобы **дописать**, а не затереть, нужен `File.AppendAllText()`."
+    },
+    {
+      "id": "q2", "type": "single",
+      "q": "Сколько аргументов требует `File.WriteAllText()`?",
+      "options": ["Один — текст", "Два — путь к файлу и записываемый текст", "Три", "Ни одного"],
+      "answer": 1,
+      "explain": "Сначала путь, потом содержимое. Такой же порядок у `AppendAllText()`."
+    },
+    {
+      "id": "q3", "type": "single",
+      "q": "Зачем чтение и запись заключают в блок `try-catch`?",
+      "options": [
+        "Чтобы код работал быстрее",
+        "Операция может не удаться — и тогда программа сообщит об этом, а не упадёт",
+        "Так требует компилятор",
+        "Чтобы файл закрылся"
+      ],
+      "answer": 1,
+      "explain": "Книга рекомендует делать это **всегда**: файл может быть занят, путь — неверен, прав может не хватать."
+    },
+    {
+      "id": "q4", "type": "single",
+      "q": "В чём разница между `ReadAllText()` и `ReadAllLines()`?",
+      "options": [
+        "Ничем",
+        "Первый возвращает весь файл одной строкой, второй — массив строк",
+        "Первый читает только первую строку",
+        "Второй работает только с CSV"
+      ],
+      "answer": 1,
+      "explain": "`ReadAllLines()` удобен, когда строки нужно нумеровать или обрабатывать по отдельности."
+    },
+    {
+      "id": "q5", "type": "single",
+      "q": "Что возвращает `ReadLine()`, когда доходит до конца файла?",
+      "options": ["Пустую строку", "`null`", "-1", "Бросает исключение"],
+      "answer": 1,
+      "explain": "Именно на этом строится цикл `while ((line = reader.ReadLine()) != null)`."
+    },
+    {
+      "id": "q6", "type": "single",
+      "q": "Зачем объекты `StreamReader` и `StreamWriter` помещают в конструкцию `using`?",
+      "options": [
+        "Чтобы подключить пространство имён",
+        "Чтобы гарантировать удаление объекта из памяти и закрытие файла после работы",
+        "Чтобы ускорить чтение",
+        "Это то же самое, что директива `using System;` в начале файла"
+      ],
+      "answer": 1,
+      "explain": "Не путай с директивой `using System;` в начале файла — здесь это **конструкция** с блоком, управляющая временем жизни объекта."
+    },
+    {
+      "id": "q7", "type": "single",
+      "q": "Что делает второй аргумент `true` в `new StreamWriter(path, true)`?",
+      "options": [
+        "Включает проверку ошибок",
+        "Включает режим дописывания — файл не затирается",
+        "Делает файл только для чтения",
+        "Создаёт файл, если его нет"
+      ],
+      "answer": 1,
+      "explain": "Без него StreamWriter создаёт файл заново, стирая прежнее содержимое."
+    },
+    {
+      "id": "q8", "type": "single",
+      "q": "Как создаётся экземпляр `StreamReader`?",
+      "options": [
+        "`StreamReader r = StreamReader(path);`",
+        "`StreamReader r = new StreamReader(path);`",
+        "`StreamReader r = File.Open(path);`",
+        "`var r = path;`"
+      ],
+      "answer": 1,
+      "explain": "Ключевое слово `new`, а путь к файлу передаётся аргументом конструктору."
+    },
+    {
+      "id": "q9", "type": "single",
+      "q": "Какой метод проверяет существование файла?",
+      "options": ["`File.Check()`", "`File.Exists()`", "`File.IsFile()`", "`File.Open()`"],
+      "answer": 1,
+      "explain": "`File.Exists(путь)` возвращает `bool`. Вызов до чтения избавляет от лишних исключений."
+    },
+    {
+      "id": "q10", "type": "multi",
+      "q": "Какие методы **не стирают** существующее содержимое файла? (выбери все)",
+      "options": ["`File.AppendAllText()`", "`File.WriteAllText()`", "`new StreamWriter(path, true)`", "`File.WriteAllLines()`"],
+      "answer": [0, 2],
+      "explain": "Все варианты со словом Write перезаписывают файл. Дописывают только Append и StreamWriter с аргументом true."
+    },
+    {
+      "id": "q11", "type": "input",
+      "q": "Напиши вызов, записывающий массив `poem` в файл по пути `path` отдельными строками.",
+      "answer": ["File.WriteAllLines(path, poem)", "File.WriteAllLines(path, poem);", "System.IO.File.WriteAllLines(path, poem);"],
+      "strip_spaces": true,
+      "explain": "Сначала путь, потом массив. Каждый элемент станет отдельной строкой файла."
+    },
+    {
+      "id": "q12", "type": "single",
+      "q": "Что произойдёт, если прочитать несуществующий файл без проверки и без try-catch?",
+      "options": [
+        "Вернётся пустая строка",
+        "Программа аварийно завершится с исключением",
+        "Файл будет создан автоматически",
+        "Вернётся null"
+      ],
+      "answer": 1,
+      "explain": "Поэтому в примерах книги всегда есть либо `File.Exists()`, либо `try-catch`, либо оба сразу."
+    }
+  ],
+  "exam": [
+    {
+      "id": "e1", "type": "single",
+      "q": "Что окажется в файле после выполнения?",
+      "code": "File.WriteAllText(path, \"Раз\");\nFile.WriteAllText(path, \"Два\");",
+      "options": ["РазДва", "Раз", "Два", "Раз\\nДва"],
+      "answer": 2,
+      "explain": "Второй вызов полностью перезаписал файл. Чтобы получилось «РазДва», второй вызов должен быть `AppendAllText`."
+    },
+    {
+      "id": "e2", "type": "single",
+      "q": "Что выведет этот цикл, если в файле три строки?",
+      "code": "using (StreamReader reader = new StreamReader(path))\n{\n    string line;\n    while ((line = reader.ReadLine()) != null)\n    {\n        Console.WriteLine(line);\n    }\n}",
+      "options": [
+        "Только первую строку",
+        "Все три строки",
+        "Зациклится навсегда",
+        "Ничего"
+      ],
+      "answer": 1,
+      "explain": "Каждый вызов `ReadLine()` читает следующую строку и сдвигает позицию; после третьей вернётся null и цикл завершится."
+    },
+    {
+      "id": "e3", "type": "single",
+      "q": "В чём разница между директивой `using System;` в начале файла и конструкцией `using (...) { }`?",
+      "options": [
+        "Разницы нет",
+        "Первая подключает пространство имён, вторая управляет временем жизни объекта и освобождает его",
+        "Вторая подключает файл",
+        "Первая работает только с файлами"
+      ],
+      "answer": 1,
+      "explain": "Одно слово, два совершенно разных смысла. Конструкция с блоком гарантирует, что файл будет закрыт."
+    },
+    {
+      "id": "e4", "type": "single",
+      "q": "Почему этот код опасен?",
+      "code": "string text = File.ReadAllText(path);\nConsole.WriteLine(text);",
+      "options": [
+        "Он слишком медленный",
+        "Нет ни проверки `File.Exists()`, ни `try-catch` — при отсутствии файла программа упадёт",
+        "Нужно использовать StreamReader",
+        "Переменная названа неправильно"
+      ],
+      "answer": 1,
+      "explain": "Книга советует заключать любые операции с файлами в try-catch, чтобы сообщить об ошибке, а не аварийно завершиться."
+    },
+    {
+      "id": "e5", "type": "single",
+      "q": "Что делает этот код при чтении CSV-строки?",
+      "code": "string[] sub = line.Split(',');\nline = String.Format(\"{0,-30} {1,-20}\", sub[1], sub[2]);",
+      "options": [
+        "Удаляет запятые",
+        "Разбивает строку по запятым и выводит второе и третье поля в колонках фиксированной ширины",
+        "Сортирует поля",
+        "Считает количество полей"
+      ],
+      "answer": 1,
+      "explain": "`{0,-30}` означает «аргумент 0, ширина поля 30, выравнивание по левому краю» — минус задаёт выравнивание влево."
+    },
+    {
+      "id": "e6", "type": "multi",
+      "q": "Какие методы относятся к классу `File` (статические, вызываются без создания объекта)? (выбери все)",
+      "options": ["`File.ReadAllText()`", "`File.Exists()`", "`ReadLine()`", "`File.AppendAllText()`"],
+      "answer": [0, 1, 3],
+      "explain": "`ReadLine()` — метод уровня объекта: его вызывают через точку после имени экземпляра StreamReader."
+    },
+    {
+      "id": "e7", "type": "single",
+      "q": "Переменная `error` в блоке `catch (Exception error)` — что это?",
+      "options": [
+        "Текст ошибки",
+        "Объект исключения; его описание доступно через `error.Message`",
+        "Код ошибки",
+        "Имя файла"
+      ],
+      "answer": 1,
+      "explain": "Именно поэтому в примерах пишут `Console.WriteLine(error.Message);` — чтобы показать понятное описание проблемы."
+    },
+    {
+      "id": "e8", "type": "input",
+      "q": "Какой метод класса File добавляет текст в конец существующего файла?",
+      "answer": ["File.AppendAllText", "File.AppendAllText()", "AppendAllText", "File.AppendAllText(path, text)"],
+      "strip_spaces": true,
+      "explain": "Требует два аргумента: путь к файлу и добавляемый текст."
+    }
+  ],
+  "tasks": [
+    {
+      "id": "ch07.t1",
+      "title": "Запись стихотворения",
+      "short": "File.Exists, WriteAllText, try-catch",
+      "level": "easy",
+      "brief": "Повтори пример «WriteText», но путь указывай **относительный** — просто `\"poem.txt\"`. Файл появится рядом с твоим кодом, в папке запуска.\n\nПрограмма должна:\n\n1. собрать текст из четырёх строк (склеивай через `+=` и `\\n`);\n2. проверить `File.Exists()` — если файл уже есть, сообщить об этом;\n3. иначе записать его в блоке `try-catch` и вывести `File Written: poem.txt`;\n4. **после записи** прочитать файл обратно через `File.ReadAllText()` и вывести содержимое — чтобы убедиться, что всё получилось.\n\nЗапусти программу **дважды** и посмотри, как изменится поведение во второй раз.",
+      "starter": "Console.Title = \"WriteText\";\n\nstring path = \"poem.txt\";\n\nstring poem = \"\\n\\tI never saw a man who looked\";\npoem += \"\\n\\tWith such a wistful eye\";\n\n",
+      "hints": [
+        "`catch (Exception error) { Console.WriteLine(error.Message); }` — стандартный блок из примеров книги.",
+        "Чтение после записи делай **вне** проверки `File.Exists`, иначе при первом запуске ты его не увидишь.",
+        "Хочешь начать заново — просто поменяй имя файла в переменной `path`."
+      ]
+    },
+    {
+      "id": "ch07.t2",
+      "title": "Дописывание в файл",
+      "short": "WriteAllLines и AppendAllText",
+      "level": "easy",
+      "brief": "Повтори логику примера «AppendText».\n\n1. Если файла `oscar.txt` **нет** — создай его через `File.WriteAllLines()` из массива в две строки и сообщи `File Written`.\n2. Если файл **есть** — допиши к нему строку с подписью автора через `File.AppendAllText()` и сообщи `Appended To File`.\n3. В конце в любом случае выведи содержимое файла построчно с нумерацией:\n\n```\n1 : В долговой тюрьме камни тверды\n2 : И мокрая стена высока\n3 : Баллада Редингской тюрьмы (Оскар Уайльд, 1898)\n```\n\nЗапусти программу три раза подряд и проследи, как растёт файл.",
+      "starter": "Console.Title = \"AppendText\";\n\nstring path = \"oscar.txt\";\n\nstring[] poem = new string[]\n{\n    \"В долговой тюрьме камни тверды\",\n    \"И мокрая стена высока\",\n};\n\n",
+      "hints": [
+        "Нумерация — это счётчик `int num = 1;` до `foreach` и `num++` внутри.",
+        "`AppendAllText` не добавляет перевод строки сам — начни добавляемый текст с `\\n`.",
+        "Массив строк можно объявлять без указания размера: `new string[] { ... }`."
+      ]
+    },
+    {
+      "id": "ch07.t3",
+      "title": "Потоковая запись через StreamWriter",
+      "short": "using, StreamWriter, режим дописывания",
+      "level": "med",
+      "brief": "Повтори пример «WriteStream».\n\n1. В конструкции `using` создай `StreamWriter` и запиши в файл массив из четырёх строк — по одной на строку через `writer.WriteLine()`.\n2. **Вторым** блоком `using` открой тот же файл с аргументом `true` и допиши строку с подписью.\n3. Оба блока помести внутрь общего `try-catch`.\n4. Прочитай результат обратно и выведи на экран.\n\nПроверь: если во втором блоке убрать `true`, файл затрётся — убедись в этом сам и верни как было.",
+      "starter": "Console.Title = \"WriteStream\";\n\nstring path = \"robert.txt\";\nstring[] poem = new string[]\n{\n    \"This truth finds honest Tam o' Shanter\",\n    \"As he from Ayr one night did canter\",\n    \"Old Ayr, which never a town surpasses\",\n    \"For honest men and bonny lasses.\"\n};\nstring attrib = \"\\n\\tTam o' Shanter (Robert Burns 1790)\";\n\ntry\n{\n    \n}\ncatch (Exception error)\n{ Console.WriteLine(error.Message); }\n",
+      "hints": [
+        "Первый блок: `using (StreamWriter writer = new StreamWriter(path)) { ... }`",
+        "Второй блок отличается только аргументом: `new StreamWriter(path, true)`.",
+        "Внутри блока `using` переменная `writer` существует только до закрывающей скобки — для второго блока нужна новая."
+      ]
+    },
+    {
+      "id": "ch07.t4",
+      "title": "Разбор CSV через StreamReader",
+      "short": "чтение до null, Split, выравнивание колонок",
+      "level": "hard",
+      "brief": "Повтори пример «ReadStream», но данные создай сам.\n\n1. Сначала запиши файл `TopFive.csv` со строками вида `Rank,Title,Artist` — заголовок и пять строк данных. Придумай любые пять песен.\n2. Затем прочитай его через `StreamReader` в конструкции `using` циклом `while ((line = reader.ReadLine()) != null)`.\n3. Для каждой строки:\n   - если она содержит `Rank` — переведи её в ВЕРХНИЙ регистр;\n   - разбей строку по запятым через `Split(',')`;\n   - выведи второе и третье поля в колонках через `String.Format(\"{0,-30} {1,-20}\", ...)`.\n4. Всё вместе — внутри `try-catch`.\n\nЭто задача на связку трёх глав: строки, циклы и файлы.",
+      "starter": "Console.Title = \"ReadStream\";\n\nstring path = \"TopFive.csv\";\n\n// 1) создаём файл с данными\nstring[] rows = new string[]\n{\n    \"Rank,Title,Artist\",\n};\n\n// 2) читаем его обратно\n",
+      "hints": [
+        "Проверка вхождения: `if (line.IndexOf(\"Rank\") != -1) line = line.ToUpper();`",
+        "`{0,-30}` — аргумент 0 в поле шириной 30 с выравниванием влево. Без минуса выравнивание будет вправо.",
+        "Переменную `string line;` объявляй **до** цикла while — иначе присваивание внутри условия не скомпилируется."
+      ]
+    }
+  ]
+}
